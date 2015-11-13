@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/menu/UDisplay.pas $
+ * $Id: UDisplay.pas 3150 2015-10-20 00:07:57Z basisbit $
  *}
 
 unit UDisplay;
@@ -204,8 +204,8 @@ var
 begin
   if (SupportsNPOT = false) then
   begin
-    TexW := Round(Power(2, Ceil(Log2(ScreenW div Screens))));
-    TexH := Round(Power(2, Ceil(Log2(ScreenH))));
+  TexW := Round(Power(2, Ceil(Log2(ScreenW div Screens))));
+  TexH := Round(Power(2, Ceil(Log2(ScreenH))));
   end
   else
   begin
@@ -271,15 +271,12 @@ begin
         ScreenPopupInfo.Draw
       else if (ScreenPopupCheck <> nil) and ScreenPopupCheck.Visible then
         ScreenPopupCheck.Draw
-{ add as needed
       else if (ScreenPopupInsertUser <> nil) and ScreenPopupInsertUser.Visible then
         ScreenPopupInsertUser.Draw
       else if (ScreenPopupSendScore <> nil) and ScreenPopupSendScore.Visible then
         ScreenPopupSendScore.Draw
       else if (ScreenPopupScoreDownload <> nil) and ScreenPopupScoreDownload.Visible then
-        ScreenPopupScoreDownload.Draw
-}
-      ;
+        ScreenPopupScoreDownload.Draw;
 
       // fade
       FadeStartTime := 0;

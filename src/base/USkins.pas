@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/base/USkins.pas $
+ * $Id: USkins.pas 3137 2015-09-14 00:11:19Z basisbit $
  *}
 
 unit USkins;
@@ -187,7 +187,7 @@ begin
   if (TextureName <> '') and (Result.IsSet) then
   begin
     //Log.LogError('', '-----------------------------------------');
-    Log.LogError('Was not able to retrieve Texture for ' + TextureName + ' - ' + Result.ToNative, 'TSkin.GetTextureFileName');
+    //Log.LogError('Was not able to retrieve Texture for ' + TextureName + ' - ' + Result.ToNative, 'TSkin.GetTextureFileName');
   end;
 end;
 

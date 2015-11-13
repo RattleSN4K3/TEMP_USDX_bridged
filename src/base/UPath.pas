@@ -29,6 +29,7 @@ unit UPath;
   {$MODE Delphi}
 {$ENDIF}
 
+{$H+}
 {$I switches.inc}
 
 interface
@@ -37,6 +38,9 @@ uses
   SysUtils,
   Classes,
   IniFiles,
+  {$IFDEF MSWINDOWS}
+  TntClasses,
+  {$ENDIF}
   UConfig,
   UUnicodeUtils;
 
@@ -78,7 +82,11 @@ type
   {**
    * TBinaryFileStream (inherited from THandleStream)
    *}
+  {$IFDEF MSWINDOWS}
+  TBinaryFileStream = class(TTntFileStream)
+  {$ELSE}
   TBinaryFileStream = class(TFileStream)
+  {$ENDIF}
   public
     {**
      * @seealso TFileStream.Create for valid Mode parameters
@@ -660,7 +668,7 @@ begin
   if (IsNativeUTF8()) then
     Result := fName
   else
-    Result := Utf8ToAnsi(fName); 
+    Result := Utf8ToAnsi(fName);
 end;
 
 function TPathImpl.GetDrive(): IPath;
@@ -815,7 +823,6 @@ begin
   (*
     It looks like the code converts correctly to UTF-8 for all input data.
     Therefore, just use those (byte) strings to perform the comparision.
-
     NOTE: This is broken for UTF-8 strings, because file system and singstar
     files might not be normalized. However, the previous code (see below in
     ELSE ifdef) doesn't handle that either. So it should be fine.
@@ -1156,6 +1163,7 @@ begin
   if ((Mode and 3) in [fmOpenRead, fmOpenReadWrite]) then
   begin
     FileStream := TBinaryFileStream.Create(Filename, fmOpenRead);
+
     try
       fStream.LoadFromStream(FileStream);
     finally

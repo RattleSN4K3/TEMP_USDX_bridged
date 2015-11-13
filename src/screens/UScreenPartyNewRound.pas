@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: https://ultrastardx.svn.sourceforge.net/svnroot/ultrastardx/trunk/src/screens/UScreenPartyNewRound.pas $
+ * $Id: UScreenPartyNewRound.pas 2246 2010-04-18 13:43:36Z tobigun $
  *}
 
 unit UScreenPartyNewRound;
@@ -45,7 +45,7 @@ uses
 type
   TScreenPartyNewRound = class(TMenu)
     private
-      VisibleRound: integer;
+      VisibleRound:  Integer;
 
     public
       //Texts:
@@ -354,6 +354,7 @@ begin
 
   //nextRound Texts
   Text[TextNextRound].Text := Language.Translate('MODE_' + uppercase(Party.Modes[Party.Rounds[Party.CurrentRound].Mode].Name) + '_DESC');
+
   Text[TextNextRoundNo].Text := InttoStr(Party.CurrentRound + 1);
   if (Length(Party.Teams) >= 1) then
   begin

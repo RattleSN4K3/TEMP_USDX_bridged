@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: https://ultrastardx.svn.sourceforge.net/svnroot/ultrastardx/trunk/src/base/ULyrics.pas $
+ * $Id: ULyrics.pas 1939 2009-11-09 00:27:55Z s_alexander $
  *}
 
 unit ULyrics;
@@ -36,6 +36,7 @@ interface
 uses
   gl,
   glext,
+  UCommon,
   UTexture,
   UThemes,
   UMusic;
@@ -318,10 +319,11 @@ begin
 
   // reset line state
   LyricLine.Reset();
-
+                          
   // check if sentence has notes
   if (Line <> nil) and (Length(Line.Note) > 0) then
   begin
+
     // copy values from SongLine to LyricLine
     LyricLine.Start     := Line.Start;
     LyricLine.StartNote := Line.Note[0].Start;
@@ -522,7 +524,7 @@ var
   LyricX, LyricY: real;           // left/top lyric position
   WordY: real;                    // word y-position
   LyricsEffect: TLyricsEffect;
-  Alpha: real;                    // alphalevel to fade out at end
+  Alpha: real;    // alphalevel to fade out at end
   ClipPlaneEq: array[0..3] of GLdouble; // clipping plane for slide effect
 
   OutlineColor_act: TRGB;                  // outline color actual line
@@ -550,20 +552,80 @@ begin
   // set font size and style
   SetFontStyle(FontStyle);
   ResetFont();
-  SetFontSize(Line.Height);
+
+  // hack to OptionsJukebox lyrics demo
+  if (Display.CurrentScreen = @ScreenOptionsJukebox) and (FontStyle = 2) then
+    SetFontSize(Line.Height * 0.8)
+  else
+    SetFontSize(Line.Height);
+
+  // set outline
+  if (Display.CurrentScreen = @ScreenJukebox) or (Display.CurrentScreen = @ScreenOptionsJukebox) then
+  begin
+
+    if (Ini.CurrentJukeboxSingLineOutlineColor <> 2) then
+      OutlineColor_act := GetLyricOutlineColor(Ini.CurrentJukeboxSingLineOutlineColor)
+    else
+    begin
+      if (Display.CurrentScreen = @ScreenJukebox) then
+        OutlineColor_act := ScreenJukeboxOptions.GetJukeboxOptionsLyricOtherOutlineColor(0)
+      else
+        OutlineColor_act := GetJukeboxLyricOtherOutlineColor(0);
+    end;
+
+    if (Ini.CurrentJukeboxActualLineOutlineColor <> 2) then
+      OutlineColor_en := GetLyricOutlineColor(Ini.CurrentJukeboxActualLineOutlineColor)
+    else
+    begin
+      if (Display.CurrentScreen = @ScreenJukebox) then
+        OutlineColor_en := ScreenJukeboxOptions.GetJukeboxOptionsLyricOtherOutlineColor(1)
+      else
+        OutlineColor_en := GetJukeboxLyricOtherOutlineColor(1);
+    end;
+
+    if (Ini.CurrentJukeboxNextLineOutlineColor <> 2) then
+      OutlineColor_dis := GetLyricOutlineColor(Ini.CurrentJukeboxNextLineOutlineColor)
+    else
+    begin
+      if (Display.CurrentScreen = @ScreenJukebox) then
+        OutlineColor_dis := ScreenJukeboxOptions.GetJukeboxOptionsLyricOtherOutlineColor(2)
+      else
+        OutlineColor_dis := GetJukeboxLyricOtherOutlineColor(2);
+    end;
+
+  end
+  else
+  begin
+    OutlineColor_act := GetLyricOutlineColor(0);
+    OutlineColor_en := GetLyricOutlineColor(0);
+    OutlineColor_dis := GetLyricOutlineColor(0);
+  end;
 
   // center lyrics
   LyricX := X + (W - Line.Width) / 2;
   LyricY := Y + (H - Line.Height) / 2;
   // get lyrics effect
-  LyricsEffect := TLyricsEffect(Ini.LyricsEffect);
 
-  // TODO: what about alpha in freetype outline fonts?
-  Alpha := 1;
+  if (Display.CurrentScreen = @ScreenJukebox) or (Display.CurrentScreen = @ScreenOptionsJukebox) then
+    LyricsEffect := TLyricsEffect(Ini.JukeboxEffect)
+  else
+    LyricsEffect := TLyricsEffect(Ini.LyricsEffect);
+
+  if (Display.CurrentScreen <> @ScreenJukebox)
+    and (Display.CurrentScreen <> @ScreenOptionsJukebox) then
+    Alpha := 1
+  else
+  begin
+    if (Display.CurrentScreen = @ScreenOptionsJukebox) then
+      Alpha := ILyricsAlphaVals[Ini.JukeboxAlpha]
+    else
+      Alpha := ScreenJukebox.LyricsAlpha;
+  end;
 
   // check if this line is active (at least its first note must be active)
   if (Beat >= Line.StartNote) then
   begin
+
     // if this line just got active, CurWord is -1,
     // this means we should try to make the first word active
     if (Line.CurWord = -1) then
@@ -595,12 +657,23 @@ begin
       Progress := 0;
 
     // last word of this line finished, but this line did not hide -> fade out
-    if Line.LastLine and
-       (Beat > LastWord.Start + LastWord.Length) then
+    if (Display.CurrentScreen <> @ScreenJukebox)
+      and (Display.CurrentScreen <> @ScreenOptionsJukebox) then
     begin
-      Alpha := 1 - (Beat - (LastWord.Start + LastWord.Length)) / 15;
-      if (Alpha < 0) then
-        Alpha := 0;
+      if Line.LastLine and
+       (Beat > LastWord.Start + LastWord.Length) then
+      begin
+        Alpha := 1 - (Beat - (LastWord.Start + LastWord.Length)) / 15;
+        if (Alpha < 0) then
+          Alpha := 0;
+      end
+    end
+    else
+    begin
+      if (Display.CurrentScreen = @ScreenOptionsJukebox) then
+        Alpha := ILyricsAlphaVals[Ini.JukeboxAlpha]
+      else
+        Alpha := ScreenJukebox.LyricsAlpha;
     end;
 
     // outline color
@@ -609,13 +682,15 @@ begin
     // draw sentence before current word
     if (LyricsEffect in [lfxSimple, lfxBall, lfxShift]) then
       // only highlight current word and not that ones before in this line
-      glColorRGB(LineColor_en, Alpha)
+      glColor4f(LineColor_en.R, LineColor_en.G ,LineColor_en.B, Alpha)
     else
-      glColorRGB(LineColor_act, Alpha);
+      glColor4f(LineColor_act.R, LineColor_act.G ,LineColor_act.B, Alpha);
+
     DrawLyricsWords(Line, LyricX, LyricY, 0, Line.CurWord-1);
 
     // draw rest of sentence (without current word)
-    glColorRGB(LineColor_en, Alpha);
+    glColor4f(LineColor_en.R, LineColor_en.G ,LineColor_en.B, Alpha);
+
     if (NextWord <> nil) then
     begin
 
@@ -630,7 +705,9 @@ begin
     SetOutlineColor(OutlineColor_act.R, OutlineColor_act.G, OutlineColor_act.B, Alpha);
 
     // draw current word
-    if (LyricsEffect in [lfxSimple, lfxBall, lfxShift]) then
+    if ((LyricsEffect in [lfxSimple, lfxBall, lfxShift])
+      // hack to OptionsJukebox lyrics demo
+      or ((LyricsEffect = lfxSlide) and (Display.CurrentScreen = @ScreenOptionsJukebox))) then
     begin
       if (LyricsEffect = lfxShift) then
         WordY := LyricY - 8 * (1-Progress)
@@ -638,7 +715,8 @@ begin
         WordY := LyricY;
 
       // change the color of the current word
-      glColor4f(LineColor_act.r, LineColor_act.g, LineColor_act.b, Alpha);
+      glColor4f(LineColor_act.R, LineColor_act.G ,LineColor_act.B, Alpha);
+
       DrawLyricsWords(Line, LyricX + CurWord.X, WordY, Line.CurWord, Line.CurWord);
     end
     // change color and zoom current word
@@ -649,9 +727,10 @@ begin
       // zoom at word center
       glTranslatef(LyricX + CurWord.X + CurWord.Width/2,
                    LyricY + Line.Height/2, 0);
-      glScalef(1.0 + (1-Progress) * 0.5, 1.0 + (1-Progress) * 0.5, 1.0);
+      glScalef(1.0 + (1-Progress) * 0.5, 1.0 + (1-Progress) * 0.5, 1);
 
-      glColor4f(LineColor_act.r, LineColor_act.g, LineColor_act.b, Alpha);
+      glColor4f(LineColor_act.R, LineColor_act.G ,LineColor_act.B, Alpha);
+
       DrawLyricsWords(Line, -CurWord.Width/2, -Line.Height/2, Line.CurWord, Line.CurWord);
 
       glPopMatrix;
@@ -671,7 +750,8 @@ begin
       ClipPlaneEq[3] := CurWord.Width * Progress;
       glClipPlane(GL_CLIP_PLANE0, @ClipPlaneEq);
       // and draw active left part
-      glColor4f(LineColor_act.r, LineColor_act.g, LineColor_act.b, Alpha);
+      glColor4f(LineColor_act.R, LineColor_act.G ,LineColor_act.B, Alpha);
+
       DrawLyricsWords(Line, 0, 0, Line.CurWord, Line.CurWord);
 
       // clip active left part of the current word
@@ -679,7 +759,8 @@ begin
       ClipPlaneEq[3] := -ClipPlaneEq[3];
       glClipPlane(GL_CLIP_PLANE0, @ClipPlaneEq);
       // and draw non-active right part
-      glColor4f(LineColor_en.r, LineColor_en.g, LineColor_en.b, Alpha);
+      glColor4f(LineColor_en.R, LineColor_en.G ,LineColor_en.B, Alpha);
+
       DrawLyricsWords(Line, 0, 0, Line.CurWord, Line.CurWord);
 
       glPopMatrix;
@@ -693,6 +774,7 @@ begin
       DrawBall(LyricX + CurWord.X + CurWord.Width * Progress,
                LyricY - 15 - 15*sin(Progress * Pi), Alpha);
     end;
+
   end
   else
   begin
@@ -705,17 +787,18 @@ begin
       // outline color
       SetOutlineColor(OutlineColor_en.R, OutlineColor_en.G, OutlineColor_en.B, Alpha);
 
-      glColorRGB(LineColor_en)
+      glColor4f(LineColor_en.R, LineColor_en.G ,LineColor_en.B, Alpha);
     end
     else
     begin
       // outline color
       SetOutlineColor(OutlineColor_dis.R, OutlineColor_dis.G, OutlineColor_dis.B, Alpha);
 
-      glColorRGB(LineColor_dis);
+      glColor4f(LineColor_dis.R, LineColor_dis.G ,LineColor_dis.B, Alpha);
     end;
 
     DrawLyricsWords(Line, LyricX, LyricY, 0, High(Line.Words));
+
   end;
 
   // reset

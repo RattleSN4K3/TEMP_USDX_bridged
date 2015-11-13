@@ -667,33 +667,25 @@ begin
   end;
 end;
 
-function AnsiToAscii(const s :AnsiString): AnsiString;
+function AnsiToAscii(const s:AnsiString):AnsiString;
 begin
   Result := s;
 
   if Result <> '' then
   begin
     UniqueString(Result);
-{$IFDEF Windows}
     CharToOem(Pchar(Result), Pchar(Result));
-{$ELSE}
-// todo
-{$ENDIF}
   end;
 end;
 
-function AsciiToAnsi(const s: AnsiString): AnsiString;
+function AsciiToAnsi(const s:AnsiString):AnsiString;
 begin
   Result := s;
 
   if Result <> '' then
   begin
     UniqueString(Result);
-{$IFDEF Windows}
     OemToChar(Pchar(Result), Pchar(Result));
-{$ELSE}
-// todo
-{$ENDIF}
   end;
 end;
 

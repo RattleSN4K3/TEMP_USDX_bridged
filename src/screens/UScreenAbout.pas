@@ -34,18 +34,18 @@ interface
 {$I switches.inc}
 
 uses
-  SysUtils,
-  SDL,
-  UDisplay,
-  UIni,
-  UMusic,
   UMenu,
+  SDL,
+  SysUtils,
+  UDisplay,
+  UMusic,
+  UIni,
   UThemes;
 
 type
   TScreenAbout = class(TMenu)
     public
-      TextOverview: integer;
+      TextOverview:    integer;
       constructor Create; override;
       function ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean; override;
       procedure OnShow; override;
@@ -57,14 +57,14 @@ type
 implementation
 
 uses
-  Classes,
-  UCommon,
-  UDataBase,
   UGraphic,
-  ULanguage,
-  ULog,
-  USong,
+  UDataBase,
   USongs,
+  USong,
+  ULanguage,
+  UCommon,
+  Classes,
+  ULog,
   UUnicodeUtils;
 
 function TScreenAbout.ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean;
@@ -107,21 +107,21 @@ begin
           end;
         end;
       SDLK_LEFT:
-				begin
-					InteractPrev;
-				end;
-      SDLK_RIGHT:
-        begin
-          InteractNext;
-        end;
-      SDLK_UP:
-        begin
+      begin
           InteractPrev;
-        end;
-      SDLK_DOWN:
-        begin
+      end;
+      SDLK_RIGHT:
+      begin
           InteractNext;
-        end;
+      end;
+      SDLK_UP:
+      begin
+          InteractPrev;
+      end;
+      SDLK_DOWN:
+      begin
+          InteractNext;
+      end;
     end;
   end;
 end;

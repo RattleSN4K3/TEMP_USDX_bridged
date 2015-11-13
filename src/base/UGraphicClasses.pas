@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: https://ultrastardx.svn.sourceforge.net/svnroot/ultrastardx/trunk/src/base/UGraphicClasses.pas $
+ * $Id: UGraphicClasses.pas 2760 2010-12-15 10:02:08Z brunzelchen $
  *}
 
 unit UGraphicClasses;
@@ -35,6 +35,7 @@ interface
 
 uses
   UTexture,
+  ULog,
   SDL;
 
 const
@@ -66,11 +67,11 @@ type
 
    constructor Create(cX, cY         : real;
                       cScreen        : integer;
-                      cLive          : byte;
-                      cFrame         : integer;
-                      cRecArrayIndex : integer;
-                      cStarType      : TParticleType;
-                      Player         : cardinal);
+		      cLive          : byte;
+		      cFrame         : integer;
+		      cRecArrayIndex : integer;
+		      cStarType      : TParticleType;
+		      Player         : cardinal);
    destructor Destroy(); override;
    procedure Draw;
    procedure LiveOn;
@@ -463,8 +464,11 @@ var
   RandomFrame : integer;
   P : integer; // P as seen on TV as Positionman
 begin
-//Spawn a random amount of stars within the given coordinates
-//RandomRange(0,14) <- this one starts at a random  frame, 16 is our last frame - would be senseless to start a particle with 16, cause it would be dead at the next frame
+
+  //AKI BUG
+
+  //Spawn a random amount of stars within the given coordinates
+  //RandomRange(0,14) <- this one starts at a random  frame, 16 is our last frame - would be senseless to start a particle with 16, cause it would be dead at the next frame
   for P := 0 to high(RecArray) do
   begin
     while (RecArray[P].TotalStarCount > RecArray[P].CurrentStarCount) do
@@ -478,6 +482,7 @@ begin
     end;
   end;
   draw;
+
 end;
 
 // kill one particle (with given index in our particle array)
@@ -521,6 +526,7 @@ var
   c: cardinal;
   p: integer;
 begin
+
   c := 0;
   while c <= High(Particle) do
   begin
@@ -529,11 +535,12 @@ begin
     else
       Kill(c);
   end;
+
   SetLength(RecArray,0);  // remove GoldenRec positions
   SetLength(PerfNoteArray,0); // remove PerfectNote positions
   for c := 0 to 5 do
   begin
-    if ((c mod 2) = CP) then
+    if not CurrentSong.isDuet or ((c mod 2) = CP)  then
       TwinkleArray[c] := 0; // reset GoldenNoteHit memory
   end;
 end;

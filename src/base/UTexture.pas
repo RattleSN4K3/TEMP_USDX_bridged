@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/base/UTexture.pas $
+ * $Id: UTexture.pas 3150 2015-10-20 00:07:57Z basisbit $
  *}
 
 unit UTexture;
@@ -112,8 +112,8 @@ type
   end;
 
   TTextureUnit = class
-    //private
-
+    private
+      TextureDatabase: TTextureDatabase;
     public
       Limit: integer;
 
@@ -134,7 +134,6 @@ type
 
 var
   Texture: TTextureUnit;
-  TextureDatabase: TTextureDatabase;
   SupportsNPOT: Boolean;
 implementation
 
@@ -271,7 +270,7 @@ begin
   AdjustPixelFormat(TexSurface, Typ);
 
   // adjust texture size (scale down, if necessary)
-  newWidth   := TexSurface.W;
+  newWidth   := TexSurface.W;                            //basisbit ToDo make images scale in size and keep ratio?
   newHeight  := TexSurface.H;
 
   if (newWidth > Limit) then
@@ -291,14 +290,14 @@ begin
   oldWidth  := newWidth;
   oldHeight := newHeight;
 
-  if (SupportsNPOT = false) then
-  begin
-       // make texture dimensions be powers of 2
-       newWidth  := Round(Power(2, Ceil(Log2(newWidth))));
-       newHeight := Round(Power(2, Ceil(Log2(newHeight))));
-       if (newHeight <> oldHeight) or (newWidth <> oldWidth) then
-          FitImage(TexSurface, newWidth, newHeight);
-  end;
+  {if (SupportsNPOT = false) then
+  begin}
+  // make texture dimensions be powers of 2
+  newWidth  := Round(Power(2, Ceil(Log2(newWidth))));
+  newHeight := Round(Power(2, Ceil(Log2(newHeight))));
+  if (newHeight <> oldHeight) or (newWidth <> oldWidth) then
+    FitImage(TexSurface, newWidth, newHeight);
+  {end;}
 
   // at this point we have the image in memory...
   // scaled so that dimensions are powers of 2
@@ -390,6 +389,7 @@ begin
 
   if (FromCache) then
   begin
+    // use texture
     TextureIndex := TextureDatabase.FindTexture(Name, Typ, Col);
     if (TextureIndex > -1) then
       Result := TextureDatabase.Texture[TextureIndex].TextureCache;
@@ -489,6 +489,7 @@ var
   TexNum: GLuint;
 begin
   T := TextureDatabase.FindTexture(Name, Typ, Col);
+  if T < 0 then Exit;
 
   if not FromCache then
   begin

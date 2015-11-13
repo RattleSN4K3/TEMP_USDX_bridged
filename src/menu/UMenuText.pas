@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/menu/UMenuText.pas $
+ * $Id: UMenuText.pas 2293 2010-04-23 22:39:26Z tobigun $
  *}
 
 unit UMenuText;
@@ -36,9 +36,10 @@ interface
 uses
   math,
   SysUtils,
-  gl, 
+  gl,
   SDL,
   TextGL,
+  UMenuInteract,
   UTexture;
 
 type
@@ -62,6 +63,7 @@ type
       ColR:   real;
       ColG:   real;
       ColB:   real;
+
       Alpha:  real;
       Int:    real;
       Style:   integer;
@@ -72,7 +74,7 @@ type
       Reflection:        boolean;
       ReflectionSpacing: real;
 
-			Writable: boolean;
+      Writable: boolean;
 
       procedure SetSelect(Value: boolean);
       property Selected: boolean read SelectBool write SetSelect;
@@ -86,9 +88,8 @@ type
       constructor Create; overload;
       constructor Create(X, Y: real; const Text: UTF8String); overload;
       constructor Create(ParX, ParY, ParW: real; ParStyle: integer; ParSize, ParColR, ParColG, ParColB: real; ParAlign: integer; const ParText: UTF8String; ParReflection: boolean; ParReflectionSpacing: real; ParZ: real; Writable: boolean); overload;
-{
+
       function GetMouseOverArea: TMouseOverRect;
-}
   end;
 
 implementation
@@ -96,6 +97,7 @@ implementation
 uses
   UGraphic,
   UUnicodeUtils,
+  UDisplay,
   StrUtils;
 
 procedure TText.SetSelect(Value: boolean);
@@ -168,7 +170,6 @@ var
   end;
 
 begin
-  isBreak:=false;
   // set TextString
   TextString := Value;
 
@@ -254,14 +255,12 @@ end;
 procedure TText.DeleteLastLetter;
 begin
   SetText(UTF8Copy(TextString, 1, LengthUTF8(TextString)-1));
-// this exchange needs chekcing
-//  SetText(UTF8Copy(TextString, 1, UTF8Length(TextString)-1));
 end;
 
 procedure TText.Draw;
 var
   X2, Y2: real;
-  tmpText2, Text2: UTF8String;
+  tmpText2, Text2:  UTF8String;
   I:      integer;
   Ticks:  cardinal;
 begin
@@ -317,7 +316,9 @@ begin
         tmpText2 := TextTiles[I];
 
         if (not (SelectBool and SelectBlink)) or (I <> High(TextTiles)) then
-          Text2 := TextTiles[I]
+        begin
+          Text2 := TextTiles[I];
+        end
         else
         begin
           if (Writable) then
@@ -392,7 +393,7 @@ begin
   ReflectionSpacing := ParReflectionSpacing;
   Writable := Writable;
 end;
-{ add later
+
 function TText.GetMouseOverArea: TMouseOverRect;
 var
   W1: real;
@@ -433,5 +434,5 @@ begin
     end;
   end;
 end;
-}
+
 end.

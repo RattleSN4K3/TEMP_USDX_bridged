@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: https://ultrastardx.svn.sourceforge.net/svnroot/ultrastardx/trunk/src/base/UCovers.pas $
+ * $Id: UCovers.pas 1939 2009-11-09 00:27:55Z s_alexander $
  *}
 
 unit UCovers;
@@ -154,12 +154,7 @@ begin
 end;
 
 function TCover.GetTexture(): TTexture;
-var
-  debughelper: UTF8String;
 begin
-  if not (Assigned(Filename)) or (Filename = nil) then
-    Exit;
-  debughelper := Filename.ToUTF8(true);
   Result := Texture.LoadTexture(Filename);
 end;
 
@@ -273,18 +268,10 @@ begin
 end;
 
 function TCoverDatabase.FindCoverIntern(const Filename: IPath): int64;
-var
-  FileUTF8String: UTF8String;
 begin
-  if Filename = nil then
-    Result := 0
-  else
-  begin
-    FileUTF8String:=Filename.ToUTF8;
-    Result := DB.GetTableValue('SELECT [ID] FROM ['+COVER_TBL+'] ' +
+  Result := DB.GetTableValue('SELECT [ID] FROM ['+COVER_TBL+'] ' +
                              'WHERE [Filename] = ?',
-                             [FileUTF8String]);
-  end;
+                             [Filename.ToUTF8]);
 end;
 
 function TCoverDatabase.FindCover(const Filename: IPath): TCover;
@@ -328,7 +315,7 @@ begin
   FileDate := Now(); //FileDateToDateTime(FileAge(Filename));
 
   Thumbnail := CreateThumbnail(Filename, Info);
-  if not (assigned(Thumbnail)) or (Thumbnail = nil) then
+  if (Thumbnail = nil) then
     Exit;
 
   CoverData := TBlobWrapper.Create;

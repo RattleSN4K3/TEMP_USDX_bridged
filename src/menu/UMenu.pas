@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/menu/UMenu.pas $
+ * $Id: UMenu.pas 3103 2014-11-22 23:21:19Z k-m_schindler $
  *}
 
 unit UMenu;
@@ -67,7 +67,7 @@ type
       SelectsS:         array of TSelectSlide;
       ButtonCollection: array of TButtonCollection;
     public
-      Text:       array of TText;
+      Text:        array of TText;
       Statics:     array of TStatic;
       StaticsList: array of TStatic;
       mX:         integer; // mouse X
@@ -104,13 +104,10 @@ type
       function AddStatic(X, Y, W, H, Z: real; ColR, ColG, ColB: real; const TexName: IPath; Typ: TTextureType): integer; overload;
       function AddStatic(X, Y, W, H: real; ColR, ColG, ColB: real; const TexName: IPath; Typ: TTextureType; Color: integer): integer; overload;
       function AddStatic(X, Y, W, H, Z: real; ColR, ColG, ColB: real; const TexName: IPath; Typ: TTextureType; Color: integer): integer; overload;
-      function AddStatic(X, Y, W, H, Z: real; ColR, ColG, ColB: real; TexX1, TexY1, TexX2, TexY2: real; const TexName: IPath; Typ: TTextureType; Color: integer; Reflection: boolean; ReflectionSpacing: real): integer; overload;
-{ for later additions
       function AddStatic(X, Y, W, H, Z: real; ColR, ColG, ColB: real; TexX1, TexY1, TexX2, TexY2: real; Alpha: real; const TexName: IPath; Typ: TTextureType; Color: integer; Reflection: boolean; ReflectionSpacing: real): integer; overload;
 
       // list
       function AddListItem(X, Y, W, H, Z: real; ColR, ColG, ColB: real; DColR, DColG, DColB: real; const TexName: IPath; const DTexName: IPath; Typ: TTextureType; Reflection: boolean; ReflectionSpacing: real): integer;
-}
 
       // text
       function AddText(ThemeText: TThemeText): integer; overload;
@@ -611,9 +608,7 @@ function TMenu.AddStatic(ThemeStatic: TThemeStatic): integer;
 begin
   Result := AddStatic(ThemeStatic.X, ThemeStatic.Y, ThemeStatic.W, ThemeStatic.H, ThemeStatic.Z,
     ThemeStatic.ColR, ThemeStatic.ColG, ThemeStatic.ColB,
-    ThemeStatic.TexX1, ThemeStatic.TexY1, ThemeStatic.TexX2, ThemeStatic.TexY2,
-//  add when using alpha
-//    ThemeStatic.TexX1, ThemeStatic.TexY1, ThemeStatic.TexX2, ThemeStatic.TexY2, ThemeStatic.Alpha,
+    ThemeStatic.TexX1, ThemeStatic.TexY1, ThemeStatic.TexX2, ThemeStatic.TexY2, ThemeStatic.Alpha,
     Skin.GetTextureFileName(ThemeStatic.Tex),
     ThemeStatic.Typ, $FFFFFF, ThemeStatic.Reflection, ThemeStatic.Reflectionspacing);
 end;
@@ -674,14 +669,12 @@ function TMenu.AddStatic(X, Y, W, H, Z: real;
 			 Typ: TTextureType;
 			 Color: integer): integer;
 begin
-  Result := AddStatic(X, Y, W, H, Z, ColR, ColG, ColB, 0, 0, 1, 1, TexName, Typ, Color, false, 0);
-//  Result := AddStatic(X, Y, W, H, Z, ColR, ColG, ColB, 0, 0, 1, 1, 1, TexName, Typ, Color, false, 0);
+  Result := AddStatic(X, Y, W, H, Z, ColR, ColG, ColB, 0, 0, 1, 1, 1, TexName, Typ, Color, false, 0);
 end;
 
 function TMenu.AddStatic(X, Y, W, H, Z: real;
                          ColR, ColG, ColB: real;
-			 TexX1, TexY1, TexX2, TexY2: real;
-//			 TexX1, TexY1, TexX2, TexY2: real; Alpha: real;
+			 TexX1, TexY1, TexX2, TexY2: real; Alpha: real;
 			 const TexName: IPath;
 			 Typ: TTextureType;
 			 Color: integer;
@@ -731,9 +724,7 @@ begin
   Statics[StatNum].Texture.TexY1 := TexY1;
   Statics[StatNum].Texture.TexX2 := TexX2;
   Statics[StatNum].Texture.TexY2 := TexY2;
-  Statics[StatNum].Texture.Alpha := 1;
-// add with alpha
-//  Statics[StatNum].Texture.Alpha := Alpha;
+  Statics[StatNum].Texture.Alpha := Alpha;
   Statics[StatNum].Visible := true;
 
   //ReflectionMod
@@ -742,7 +733,7 @@ begin
 
   Result := StatNum;
 end;
-{ for later addition
+
 function TMenu.AddListItem(X, Y, W, H, Z: real;
        ColR, ColG, ColB: real;
        DColR, DColG, DColB: real;
@@ -794,7 +785,6 @@ begin
 
   Result := StatNum;
 end;
-}
 
 function TMenu.AddText(ThemeText: TThemeText): integer;
 begin
@@ -1113,8 +1103,8 @@ procedure TMenu.InteractPrevRow;
 var
   Int: integer;
 begin
-// these two procedures just make sense for at least 5 buttons, because we
-// usually start a second row when there are more than 4 buttons
+  // these two procedures just make sense for at least 5 buttons, because we
+  // usually start a second row when there are more than 4 buttons
   Int := Interaction;
 
   Int := Int - 4;//ceil(Length(Interactions) / 2);
@@ -1139,6 +1129,7 @@ begin
     Int         := Interaction // invalid button, keep current one
   else
     Interaction := Int;        // select row above
+
 end;
 
 procedure TMenu.InteractNext;
@@ -1385,6 +1376,7 @@ function TMenu.AddSelectSlide(X, Y, W, H, SkipX, SBGW, ColR, ColG, ColB, Int, DC
   const Caption: UTF8String; var Data: integer): integer;
 var
   S: integer;
+  I: integer;
 begin
   S := Length(SelectsS);
   SetLength(SelectsS, S + 1);
@@ -1831,7 +1823,7 @@ end;
 //of the control at this position
 function TMenu.InteractAt(X, Y: real): integer;
 var
-  i: integer;
+  i, nBut: integer;
 begin
   Result := -1;
   for i := Low(Interactions) to High(Interactions) do
@@ -1863,7 +1855,7 @@ end;
 //takes x,y coordinates and returns the button collection id
 function TMenu.CollectionAt(X, Y: real): integer;
 var
-  i: integer;
+  i, nBut: integer;
 begin
   Result := -1;
   for i:= Low(ButtonCollection) to High(ButtonCollection) do

@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/menu/UDrawTexture.pas $
+ * $Id: UDrawTexture.pas 1498 2008-11-03 14:53:17Z tobigun $
  *}
 
 unit UDrawTexture;
@@ -43,7 +43,8 @@ procedure DrawTexture(Texture: TTexture);
 implementation
 
 uses
-  gl;
+  gl,
+  glu;
 
 procedure DrawLine(X1, Y1, X2, Y2, ColR, ColG, ColB: real);
 begin
@@ -83,6 +84,7 @@ begin
     glEnable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //    glBlendFunc(GL_SRC_COLOR, GL_ZERO);
+
     glBindTexture(GL_TEXTURE_2D, TexNum);
 
     x1 := x;

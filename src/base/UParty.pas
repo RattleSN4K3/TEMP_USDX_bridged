@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: https://ultrastardx.svn.sourceforge.net/svnroot/ultrastardx/trunk/src/base/UParty.pas $
+ * $Id: UParty.pas 2581 2010-07-18 10:33:05Z whiteshark0 $
  *}
 
 unit UParty;
@@ -217,9 +217,8 @@ type
     function GetWinnerString(Round: integer): UTF8String;
 
     procedure SaveSungPartySong(ID: integer);
-{ add when Duet is ready
     function SongNotSungAndNotDuet(ID, N_DuetSongs: integer): boolean;
-}
+
     destructor  Destroy; override;
   end;
 
@@ -261,6 +260,7 @@ uses
   ULuaCore,
   UDisplay,
   USong,
+  USongs,
   UNote,
   SysUtils;
 
@@ -830,7 +830,7 @@ begin
     // we set screen song to party mode
     // plugin should not have to do this if it
     // don't want default procedure to be executed
-    ScreenSong.Mode := smPartyClassic; // may need to be commented off
+    //ScreenSong.Mode := smPartyClassic;
 
     with Modes[Rounds[CurRound].Mode] do
       ExecuteDefault := (CallLua(Parent, Functions.BeforeSongSelect));
@@ -885,10 +885,10 @@ begin
   //set correct playersplay
   if (bPartyGame) then
     PlayersPlay := Length(Teams);
-{ add when Tournament is ready
+
   if (ScreenSong.Mode = smPartyTournament) then
     PlayersPlay := 2;
-}
+
   // execute default function:
   if ExecuteDefault then
   begin
@@ -945,16 +945,12 @@ begin
       // display party score screen
       Display.FadeTo(@ScreenPartyScore)
     else //display standard score screen
-{ add when Tournament is ready
     begin
       if (ScreenSong.Mode = smPartyTournament) then
         Display.FadeTo(@ScreenPartyTournamentWin)
       else
-}
-      Display.FadeTo(@ScreenScore);
-{ add when Tournament is ready
-   end;
-}
+        Display.FadeTo(@ScreenScore);
+    end;
   end;
 end;
 
@@ -1049,7 +1045,7 @@ begin
   SetLength(SungPartySongs, Length(SungPartySongs) + 1);
   SungPartySongs[High(SungPartySongs)] := ID;
 end;
-{ add when Duet is ready
+
 function TPartyGame.SongNotSungAndNotDuet(ID, N_DuetSongs: integer): boolean;
 var
   I: integer;
@@ -1080,5 +1076,5 @@ begin
     Result := true;
 
 end;
-}
+
 end.

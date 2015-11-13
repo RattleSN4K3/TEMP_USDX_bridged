@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/screens/UScreenSongJumpto.pas $
+ * $Id: UScreenSongJumpto.pas 2199 2010-03-14 20:56:20Z brunzelchen $
  *}
 
 unit UScreenSongJumpto;
@@ -237,12 +237,9 @@ begin
   fVisSongs := Count;
 
   //Fix SongSelection
-{ for later addition
   if (TSongMenuMode(Ini.SongMenu) in [smRoulette, smCarousel, smSlide, smSlotMachine]) then
   begin
-}
     ScreenSong.Interaction := high(CatSongs.Song);
-{ for later addition
   end;
 
   if (TSongMenuMode(Ini.SongMenu) in [smChessboard, smList, smMosaic]) then
@@ -251,14 +248,11 @@ begin
     ScreenSong.ChessboardMinLine := 0;
     ScreenSong.ListMinLine := 0;
   end;
-}
 
   ScreenSong.SelectNext;
   ScreenSong.FixSelected;
 
-{ for later addition
   ScreenSong.SetScrollRefresh;
-}
 
   //Play Correct Music
   if (ScreenSong.Interaction <> fLastPlayed) or (CatSongs.VisibleSongs = 0) then

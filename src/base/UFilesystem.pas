@@ -43,7 +43,11 @@ uses
   UPath;
 
 type
+  {$IFDEF MSWINDOWS}
+  TSytemSearchRec = TSearchRecW;
+  {$ELSE}
   TSytemSearchRec = TSearchRec;
+  {$ENDIF}
 
   TFileInfo = record
     Time: integer;  // timestamp
@@ -252,72 +256,67 @@ end;
 
 function TFileSystemImpl.ExpandFileName(const FileName: IPath): IPath;
 begin
-  Result := Path(SysUtils.ExpandFileName(FileName.ToWide()));
+  Result := Path(WideExpandFileName(FileName.ToWide()));
 end;
 
 function TFileSystemImpl.FileCreate(const FileName: IPath): TFileHandle;
 begin
-  Result := SysUtils.FileCreate(FileName.ToWide());
+  Result := WideFileCreate(FileName.ToWide());
 end;
 
 function TFileSystemImpl.DirectoryCreate(const Dir: IPath): boolean;
 begin
-  Result := SysUtils.CreateDir(Dir.ToWide());
+  Result := WideCreateDir(Dir.ToWide());
 end;
 
 function TFileSystemImpl.FileOpen(const FileName: IPath; Mode: longword): TFileHandle;
 begin
-  Result := SysUtils.FileOpen(FileName.ToWide(), Mode);
+  Result := WideFileOpen(FileName.ToWide(), Mode);
 end;
 
 function TFileSystemImpl.FileAge(const FileName: IPath): integer;
 begin
-  Result := SysUtils.FileAge(FileName.ToWide());
+  Result := WideFileAge(FileName.ToWide());
 end;
 
 function TFileSystemImpl.FileAge(const FileName: IPath; out FileDateTime: TDateTime): boolean;
-var
-  FileDate: integer;
 begin
-  FileDate := SysUtils.FileAge(FileName.ToWide());
-  Result := (FileDate <> -1);
-  if (Result) then
-    FileDateTime := FileDateToDateTime(FileDate);
+  Result := WideFileAge(FileName.ToWide(), FileDateTime);
 end;
 
 function TFileSystemImpl.DirectoryExists(const Name: IPath): boolean;
 begin
-  Result := SysUtils.DirectoryExists(Name.ToWide());
+  Result := WideDirectoryExists(Name.ToWide());
 end;
 
 function TFileSystemImpl.FileExists(const Name: IPath): boolean;
 begin
-  Result := SysUtils.FileExists(Name.ToWide());
+  Result := WideFileExists(Name.ToWide());
 end;
 
 function TFileSystemImpl.FileGetAttr(const FileName: IPath): Cardinal;
 begin
-  Result := SysUtils.FileGetAttr(FileName.ToWide());
+  Result := WideFileGetAttr(FileName.ToWide());
 end;
 
 function TFileSystemImpl.FileSetAttr(const FileName: IPath; Attr: integer): boolean;
 begin
- Result := (SysUtils.FileSetAttr(FileName.ToWide(), Attr) = 0);
+  Result := WideFileSetAttr(FileName.ToWide(), Attr);
 end;
 
 function TFileSystemImpl.FileIsReadOnly(const FileName: IPath): boolean;
 begin
-  Result := SysUtils.FileIsReadOnly(FileName.ToWide());
+  Result := WideFileIsReadOnly(FileName.ToWide());
 end;
 
 function TFileSystemImpl.FileSetReadOnly(const FileName: IPath; ReadOnly: boolean): boolean;
 begin
-  Result := (SysUtils.FileSetAttr(FileName.ToWide(), faReadOnly) = 0);
+  Result := WideFileSetReadOnly(FileName.ToWide(), ReadOnly);
 end;
 
 function TFileSystemImpl.ForceDirectories(const Dir: IPath): boolean;
 begin
-  Result := SysUtils.ForceDirectories(Dir.ToWide());
+  Result := WideForceDirectories(Dir.ToWide());
 end;
 
 function TFileSystemImpl.FileSearch(const Name: IPath; DirList: array of IPath): IPath;
@@ -332,135 +331,97 @@ begin
       DirListStr := DirListStr + PathSep;
     DirListStr := DirListStr + DirList[I].ToWide();
   end;
-  Result := Path(SysUtils.FileSearch(Name.ToWide(), DirListStr));
+  Result := Path(WideFileSearch(Name.ToWide(), DirListStr));
 end;
 
 function TFileSystemImpl.RenameFile(const OldName, NewName: IPath): boolean;
 begin
-  Result := SysUtils.RenameFile(OldName.ToNative(), NewName.ToWide());
+  Result := WideRenameFile(OldName.ToWide(), NewName.ToWide());
 end;
 
 function TFileSystemImpl.DeleteFile(const FileName: IPath): boolean;
 begin
-  Result := SysUtils.DeleteFile(FileName.ToWide());
+  Result := WideDeleteFile(FileName.ToWide());
 end;
 
 function TFileSystemImpl.RemoveDir(const Dir: IPath): boolean;
 begin
-  Result := SysUtils.RemoveDir(Dir.ToWide());
+  Result := WideRemoveDir(Dir.ToWide());
 end;
 
 function TFileSystemImpl.CopyFile(const Source, Target: IPath; FailIfExists: boolean): boolean;
-const
-  COPY_BUFFER_SIZE = 4096; // a good tradeoff between speed and memory consumption
-var
-  SourceFile, TargetFile: TFileStream;
-  FileCopyBuffer: array [0..COPY_BUFFER_SIZE-1] of byte; // temporary copy-buffer.
-  NumberOfBytes: integer; // number of bytes read from SourceFile
 begin
-  Result := false;
-  SourceFile := nil;
-  TargetFile := nil;
-
-  // if overwrite is disabled return if the target file already exists
-  if (FailIfExists and FileExists(Target)) then
-    Exit;
-
-  try
-    try
-      // open source and target file (might throw an exception on error)
-      SourceFile := TFileStream.Create(Source.ToWide(), fmOpenRead);
-      TargetFile := TFileStream.Create(Target.ToWide(), fmCreate or fmOpenWrite);
-
-      while true do
-      begin
-        // read a block from the source file and check for errors or EOF
-        NumberOfBytes := SourceFile.Read(FileCopyBuffer, SizeOf(FileCopyBuffer));
-        if (NumberOfBytes <= 0) then
-          Break;
-        // write block to target file and check if everything was written
-        if (TargetFile.Write(FileCopyBuffer, NumberOfBytes) <> NumberOfBytes) then
-          Exit;
-      end;
-    except
-      Exit;
-    end;
-  finally
-    SourceFile.Free;
-    TargetFile.Free;
-  end;
-
-  Result := true;
+  Result := WideCopyFile(Source.ToWide(), Target.ToWide(), FailIfExists);
 end;
 
 function TFileSystemImpl.ExtractFileDrive(const FileName: IPath): IPath;
 begin
-  Result := Path(SysUtils.ExtractFileDrive(FileName.ToWide()));
+  Result := Path(WideExtractFileDrive(FileName.ToWide()));
 end;
 
 function TFileSystemImpl.ExtractFilePath(const FileName: IPath): IPath;
 begin
-  Result := Path(SysUtils.ExtractFilePath(FileName.ToWide()));
+  Result := Path(WideExtractFilePath(FileName.ToWide()));
 end;
 
 function TFileSystemImpl.ExtractFileDir(const FileName: IPath): IPath;
 begin
-  Result := Path(SysUtils.ExtractFileDir(FileName.ToWide()));
+  Result := Path(WideExtractFileDir(FileName.ToWide()));
 end;
 
 function TFileSystemImpl.ExtractFileName(const FileName: IPath): IPath;
 begin
-  Result := Path(SysUtils.ExtractFileName(FileName.ToWide()));
+  Result := Path(WideExtractFileName(FileName.ToWide()));
 end;
 
 function TFileSystemImpl.ExtractFileExt(const FileName: IPath): IPath;
 begin
-  Result := Path(SysUtils.ExtractFileExt(FileName.ToWide()));
+  Result := Path(WideExtractFileExt(FileName.ToWide()));
 end;
 
 function TFileSystemImpl.ExtractRelativePath(const BaseName: IPath; const FileName: IPath): IPath;
 begin
-  Result := Path(SysUtils.ExtractRelativePath(BaseName.ToWide(), FileName.ToWide()));
+  Result := Path(WideExtractRelativePath(BaseName.ToWide(), FileName.ToWide()));
 end;
 
 function TFileSystemImpl.ChangeFileExt(const FileName: IPath; const Extension: IPath): IPath;
 begin
-  Result := Path(SysUtils.ChangeFileExt(FileName.ToWide(), Extension.ToWide()));
+  Result := Path(WideChangeFileExt(FileName.ToWide(), Extension.ToWide()));
 end;
 
 function TFileSystemImpl.IncludeTrailingPathDelimiter(const FileName: IPath): IPath;
 begin
-  Result := Path(SysUtils.IncludeTrailingPathDelimiter(FileName.ToWide()));
+  Result := Path(WideIncludeTrailingPathDelimiter(FileName.ToWide()));
 end;
 
 function TFileSystemImpl.ExcludeTrailingPathDelimiter(const FileName: IPath): IPath;
 begin
-  Result := Path(SysUtils.ExcludeTrailingPathDelimiter(FileName.ToWide()));
+  Result := Path(WideExcludeTrailingPathDelimiter(FileName.ToWide()));
 end;
 
 function TFileSystemImpl.FindFirst(const FilePattern: IPath; Attr: integer; var F: TSytemSearchRec): integer;
 begin
-  Result := SysUtils.FindFirst(FilePattern.ToWide(), Attr, F);
+  Result := WideFindFirst(FilePattern.ToWide(), Attr, F);
 end;
 
 function TFileSystemImpl.FindNext(var F: TSytemSearchRec): integer;
 begin
-  Result := SysUtils.FindNext(F);;
+  Result := WideFindNext(F);
 end;
 
 procedure TFileSystemImpl.FindClose(var F: TSytemSearchRec);
 begin
-  SysUtils.FindClose(F);
+  WideFindClose(F);
 end;
 
 function TFileSystemImpl.GetCurrentDir: IPath;
 begin
-  Result := Path(SysUtils.GetCurrentDir());
+  Result := Path(WideGetCurrentDir());
 end;
 
 function TFileSystemImpl.SetCurrentDir(const Dir: IPath): boolean;
 begin
-  Result := SysUtils.SetCurrentDir(Dir.ToWide());
+  Result := WideSetCurrentDir(Dir.ToWide());
 end;
 
 {$ELSE} // UNIX

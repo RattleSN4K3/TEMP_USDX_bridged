@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/screens/UScreenOptions.pas $
+ * $Id: UScreenOptions.pas 2649 2010-10-10 10:34:20Z tobigun $
  *}
 
 unit UScreenOptions;
@@ -61,6 +61,9 @@ implementation
 
 uses
   UGraphic,
+  UDatabase,
+  ULanguage,
+  UWebcam,
   UUnicodeUtils;
 
 function TScreenOptions.ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean;
@@ -132,7 +135,6 @@ begin
 
           if SelInteraction = 7 then
           begin
-{
             if (High(DataBase.NetworkUser) = -1) then
               ScreenPopupError.ShowPopup(Language.Translate('SING_OPTIONS_NETWORK_NO_DLL'))
             else
@@ -140,19 +142,18 @@ begin
               AudioPlayback.PlaySound(SoundLib.Back);
               FadeTo(@ScreenOptionsNetwork);
             end;
-}
           end;
 
           if SelInteraction = 8 then
           begin
             AudioPlayback.PlaySound(SoundLib.Back);
-// disabled for now            FadeTo(@ScreenOptionsWebcam);
+            FadeTo(@ScreenOptionsWebcam);
           end;
 
           if SelInteraction = 9 then
           begin
             AudioPlayback.PlaySound(SoundLib.Start);
-// disabled for now            FadeTo(@ScreenOptionsJukebox);
+            FadeTo(@ScreenOptionsJukebox);
           end;
 
           if SelInteraction = 10 then
@@ -205,7 +206,7 @@ begin
   AddButton(Theme.Options.ButtonAdvanced);
   if (Length(Button[6].Text)=0) then
     AddButtonText(14, 20, Theme.Options.Description[6]);
-{
+
   AddButton(Theme.Options.ButtonNetwork);
   if (Length(Button[7].Text)=0) then
     AddButtonText(14, 20, Theme.Options.Description[7]);
@@ -217,10 +218,9 @@ begin
   AddButton(Theme.Options.ButtonJukebox);
   if (Length(Button[9].Text)=0) then
     AddButtonText(14, 20, Theme.Options.Description[9]);
-}
+
   AddButton(Theme.Options.ButtonExit);
-  if (Length(Button[7].Text)=0) then
-//  if (Length(Button[10].Text)=0) then
+  if (Length(Button[10].Text)=0) then
     AddButtonText(14, 20, Theme.Options.Description[10]);
 
   Interaction := 0;

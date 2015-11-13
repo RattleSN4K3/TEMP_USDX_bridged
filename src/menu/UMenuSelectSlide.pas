@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/menu/UMenuSelectSlide.pas $
+ * $Id: UMenuSelectSlide.pas 2293 2010-04-23 22:39:26Z tobigun $
  *}
 
 unit UMenuSelectSlide;

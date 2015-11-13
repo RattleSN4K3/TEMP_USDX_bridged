@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: https://ultrastardx.svn.sourceforge.net/svnroot/ultrastardx/trunk/src/base/UCommon.pas $
+ * $Id: UCommon.pas 2241 2010-04-15 17:57:15Z whiteshark0 $
  *}
 
 unit UCommon;
@@ -60,11 +60,11 @@ const
  *   SplitString(' split  me now ', 0) -> ['split', 'me', 'now']
  *   SplitString(' split  me now ', 1) -> ['split', 'me now']
  *}
-function SplitString(const Str: string; MaxCount: integer = 0; Separators: TSysCharSet = SepWhitespace): TStringDynArray;
+ function StringInArray(const Value: string; Strings: array of string): Boolean;
 
-function StringInArray(const Value: string; Strings: array of string): boolean;
+ function SplitString(const Str: string; MaxCount: integer = 0; Separators: TSysCharSet = SepWhitespace): TStringDynArray;
 
-function GetStringWithNoAccents(str: UTF8String): UTF8String;
+ function GetStringWithNoAccents(str: UTF8String):UTF8String;
 
 type
   TRGB = record
@@ -121,14 +121,13 @@ uses
   UMain,
   UUnicodeUtils;
 
-function StringInArray(const Value: string; Strings: array of string): boolean;
-var
-  i: integer;
+function StringInArray(const Value: string; Strings: array of string): Boolean;
+var I: Integer;
 begin
-  Result := true;
-  for i := Low(Strings) to High(Strings) do
-    if Strings[i] = Value then exit;
-  Result := false;
+  Result := True;
+  for I := Low(Strings) to High(Strings) do
+    if Strings[i] = Value then Exit;
+  Result := False;
 end;
 
 function SplitString(const Str: string; MaxCount: integer; Separators: TSysCharSet): TStringDynArray;
@@ -185,10 +184,10 @@ begin
 end;
 
 const
-  Accents:   array [0..37] of UTF8String = ('Ã§', 'Ã¡', 'Ã©', 'Ã­', 'Ã³', 'Ãº', 'Ã½', 'Ã ', 'Ã¨', 'Ã¬', 'Ã²', 'Ã¹', 'Ã£', 'Ãµ', 'Ã±', 'Ã¤', 'Ã«', 'Ã¯', 'Ã¶', 'Ã¼', 'Ã¿', 'Ã¢', 'Ãª', 'Ã®', 'Ã´', 'Ã»', '!', 'Â¡', '"', '&', '(', ')', '?', 'Â¿', ',', '.', ':', ';');
+  Accents: array [0..37] of UTF8String = ('ç', 'á', 'é', 'í', 'ó', 'ú', 'ý', 'à', 'è', 'ì', 'ò', 'ù', 'ã', 'õ', 'ñ', 'ä', 'ë', 'ï', 'ö', 'ü', 'ÿ', 'â', 'ê', 'î', 'ô', 'û', '!', '¡', '"', '&', '(', ')', '?', '¿', ',', '.', ':', ';');
   NoAccents: array [0..37] of UTF8String = ('c', 'a', 'e', 'i', 'o', 'u', 'y', 'a', 'e', 'i', 'o', 'u', 'a', 'o', 'n', 'a', 'e', 'i', 'o', 'u', 'y', 'a', 'e', 'i', 'o', 'u', '', '', '', '', '', '', '', '', '', '', '', '');
 
-function GetStringWithNoAccents(str: UTF8String): UTF8String;
+function GetStringWithNoAccents(str: UTF8String):UTF8String;
 var
   i: integer;
   tmp: string;

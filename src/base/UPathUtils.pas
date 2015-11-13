@@ -177,11 +177,10 @@ begin
   FindPath(VisualsPath,   SharedPath.Append('visuals'),   false);
   FindPath(FontPath,      SharedPath.Append('fonts'),     false);
   FindPath(ResourcesPath, SharedPath.Append('resources'), false);
-{ add later as required
   FindPath(WebsitePath,   SharedPath.Append('webs'), false);
   FindPath(SoundFontsPath, SharedPath.Append('soundfonts'), false);
   FindPath(AvatarsPath, SharedPath.Append('avatars'), false);
-}
+
   // Playlists are not shared as we need one directory to write too
   FindPath(PlaylistPath, UserPath.Append('playlists'), true);
 

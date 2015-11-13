@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/base/UMusic.pas $
+ * $Id: UMusic.pas 3103 2014-11-22 23:21:19Z k-m_schindler $
  *}
 
 unit UMusic;
@@ -38,7 +38,8 @@ uses
   Classes,
   UTime,
   UBeatTimer,
-  UPath;
+  UPath,
+  UWebcam;
 
 type
   TNoteType = (ntFreestyle, ntNormal, ntGolden);
@@ -909,6 +910,8 @@ begin
   // stop, close and free sounds
   SoundLib.Free;
 
+  // release webcam
+  Webcam.Free;
 
   // stop and close music stream
   if (AudioPlayback <> nil) then

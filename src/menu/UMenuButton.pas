@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/menu/UMenuButton.pas $
+ * $Id: UMenuButton.pas 3123 2015-08-23 03:15:31Z basisbit $
  *}
 
 unit UMenuButton;
@@ -487,14 +487,15 @@ begin
           glTexCoord2f(TexX2*TexW, TexY2*TexH);
           glVertex3f(x+w*scaleW, y+h*scaleH + Spacing, z);
         glEnd;
-        }
+         }
 
-        y1 := y + h*scaleH + Spacing;
-        y2 := y + h*scaleH + h*scaleH/2 + Spacing;
-        y3 := y + h*scaleH + h*scaleH/2 + Spacing;
-        y4 := y + h*scaleH + Spacing;
+         y1 := y + h*scaleH + Spacing;
+         y2 := y+h*scaleH + h*scaleH/2 + Spacing;
+         y3 := y+h*scaleH + h*scaleH/2 + Spacing;
+         y4 := y+h*scaleH + Spacing;
 
-        glBegin(GL_QUADS);//Top Left
+
+         glBegin(GL_QUADS);//Top Left
           glColor4f(ColR * Int, ColG * Int, ColB * Int, Alpha-0.3);
           glTexCoord2f(TexX1*TexW, TexY2*TexH);
           glVertex3f(x, y1 - (y1 - (LeftScale * (y1))), z);
@@ -515,18 +516,18 @@ begin
           glVertex3f(x+w*scaleW, y4 - (y4 - (RightScale * (y4))), z);
         glEnd;
 
-        {
-        glBegin(GL_QUADS);
-					glTexCoord2f(TexX1*TexW, TexY1*TexH);
-					glVertex3f(x, y + (y - (LeftScale * (y))), z);
-					glTexCoord2f(TexX1*TexW, TexY2*TexH);
-					glVertex3f(x, y - (y - (LeftScale * (y))), z);
-					glTexCoord2f(TexX2*TexW, TexY2*TexH);
-					glVertex3f(x, y - (y - (RightScale * (y))), z);
-					glTexCoord2f(TexX2*TexW, TexY1*TexH);
-					glVertex3f(x, y + (y - (RightScale * (y))), z);
-        glEnd;
-        }
+         {
+           glBegin(GL_QUADS);
+      glTexCoord2f(TexX1*TexW, TexY1*TexH);
+      glVertex3f(x, y + (y - (LeftScale * (y))), z);
+      glTexCoord2f(TexX1*TexW, TexY2*TexH);
+      glVertex3f(x, y - (y - (LeftScale * (y))), z);
+      glTexCoord2f(TexX2*TexW, TexY2*TexH);
+      glVertex3f(x, y - (y - (RightScale * (y))), z);
+      glTexCoord2f(TexX2*TexW, TexY1*TexH);
+      glVertex3f(x, y + (y - (RightScale * (y))), z);
+    glEnd;
+          }
 
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_DEPTH_TEST);

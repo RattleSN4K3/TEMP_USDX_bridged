@@ -102,9 +102,6 @@
   {$IFDEF HaveSWScale}
     {$DEFINE UseSWScale}
   {$ENDIF}
-  {$IFDEF HaveSWResample}
-	{$DEFINE UseSWResample}
-  {$ENDIF}
 {$ENDIF}
 
 {$IFDEF HaveLibsamplerate}

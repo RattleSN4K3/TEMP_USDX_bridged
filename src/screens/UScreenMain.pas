@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/screens/UScreenMain.pas $
+ * $Id: UScreenMain.pas 3128 2015-08-28 01:45:23Z basisbit $
  *}
 
 unit UScreenMain;
@@ -34,20 +34,32 @@ interface
 {$I switches.inc}
 
 uses
+  ULog,
+  Windows,
+  {$IFDEF FPC}
+  md5,
+  {$ENDIF}
+  {$IFDEF Delphi}
+  UMD5,
+  {$ENDIF}
   UMenu,
   SDL,
   UDisplay,
   UMusic,
   UFiles,
+  USong,
+  UScreenSong,
   SysUtils,
   UThemes;
 
 type
+
   TScreenMain = class(TMenu)
   private
     { ticks when the user interacted, used to start credits
       after a period of time w/o user interaction }
     UserInteractionTicks: cardinal;
+
   public
     TextDescription:     integer;
     TextDescriptionLong: integer;
@@ -79,16 +91,15 @@ uses
   UParty,
   UScreenCredits,
   USkins,
-  USong,
   UUnicodeUtils;
 
 function TScreenMain.ParseInput(PressedKey: Cardinal; CharCode: UCS4Char;
   PressedDown: boolean): boolean;
 var
   SDL_ModState: word;
-  I: integer;
 begin
   Result := true;
+
   { reset user interaction timer }
   UserInteractionTicks := SDL_GetTicks;
 
@@ -123,27 +134,6 @@ begin
       Ord('E'): begin
         FadeTo(@ScreenEdit, SoundLib.Start);
         Exit;
-      end;
-
-      Ord('J'): begin
-        //ScreenSong.Mode := smPartyJukebox;
-        AudioPlayback.PlaySound(SoundLib.Start);
-
-        SetLength(ScreenJukebox.JukeboxSongsList, 0);
-        SetLength(ScreenJukebox.JukeboxVisibleSongs, 0);
-
-        for I := 0 to High(CatSongs.Song) do
-        begin
-          if not (CatSongs.Song[I].Main) then
-            ScreenJukebox.AddSongToJukeboxList(I);
-        end;
-        ScreenJukebox.ActualInteraction := 0;
-        ScreenJukebox.CurrentSongList := 0;
-        ScreenJukebox.ListMin := 0;
-        ScreenJukebox.Interaction := 0;
-        ScreenJukebox.CurrentSongID := ScreenJukebox.JukeboxVisibleSongs[ScreenJukebox.CurrentSongList];
-
-        FadeTo(@ScreenJukebox);
       end;
     end;
 
@@ -200,7 +190,7 @@ begin
         begin
           if (Songs.SongList.Count >= 1) then
           begin
-// disable for now            FadeTo(@ScreenJukeboxPlaylist, SoundLib.Start);
+            FadeTo(@ScreenJukeboxPlaylist, SoundLib.Start);
           end
           else //show error message, No Songs Loaded
             ScreenPopupError.ShowPopup(Language.Translate('ERROR_NO_SONGS'));

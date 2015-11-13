@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/screens/UScreenOptionsAdvanced.pas $
+ * $Id: UScreenOptionsAdvanced.pas 2338 2010-05-03 21:58:30Z k-m_schindler $
  *}
 
 unit UScreenOptionsAdvanced;
@@ -82,8 +82,7 @@ begin
         end;
       SDLK_RETURN:
         begin
-          if SelInteraction = 6 then
-//          if SelInteraction = 8 then
+          if SelInteraction = 8 then
           begin
             Ini.Save;
             AudioPlayback.PlaySound(SoundLib.Back);
@@ -96,8 +95,7 @@ begin
         InteractPrev;
       SDLK_RIGHT:
         begin
-          if (SelInteraction >= 0) and (SelInteraction <= 5) then
-//          if (SelInteraction >= 0) and (SelInteraction <= 7) then
+          if (SelInteraction >= 0) and (SelInteraction <= 7) then
           begin
             AudioPlayback.PlaySound(SoundLib.Option);
             InteractInc;
@@ -105,8 +103,7 @@ begin
         end;
       SDLK_LEFT:
         begin
-          if (SelInteraction >= 0) and (SelInteraction <= 5) then
-//          if (SelInteraction >= 0) and (SelInteraction <= 7) then
+          if (SelInteraction >= 0) and (SelInteraction <= 7) then
           begin
             AudioPlayback.PlaySound(SoundLib.Option);
             InteractDec;
@@ -147,7 +144,7 @@ begin
   Theme.OptionsAdvanced.SelectPartyPopup.showArrows := true;
   Theme.OptionsAdvanced.SelectPartyPopup.oneItemOnly := true;
   AddSelectSlide(Theme.OptionsAdvanced.SelectPartyPopup, Ini.PartyPopup, IPartyPopupTranslated);
-{
+
   Theme.OptionsAdvanced.SelectSingScores.showArrows := true;
   Theme.OptionsAdvanced.SelectSingScores.oneItemOnly := true;
   AddSelectSlide(Theme.OptionsAdvanced.SelectSingScores, Ini.SingScores, ISingScoresTranslated);
@@ -155,11 +152,10 @@ begin
   Theme.OptionsAdvanced.SelectTopScores.showArrows := true;
   Theme.OptionsAdvanced.SelectTopScores.oneItemOnly := true;
   AddSelectSlide(Theme.OptionsAdvanced.SelectTopScores, Ini.TopScores, ITopScoresTranslated);
-}
+
   AddButton(Theme.OptionsAdvanced.ButtonExit);
   if (Length(Button[0].Text)=0) then
-    AddButtonText(20, 5, Theme.Options.Description[7]);
-//    AddButtonText(20, 5, Theme.Options.Description[10]);
+    AddButtonText(20, 5, Theme.Options.Description[10]);
 
   Interaction := 0;
 end;

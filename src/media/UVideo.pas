@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/media/UVideo.pas $
+ * $Id: UVideo.pas 3150 2015-10-20 00:07:57Z basisbit $
  *}
 
 unit UVideo;
@@ -503,8 +503,8 @@ begin
 
   if (SupportsNPOT = false) then
   begin
-    fTexWidth   := Round(Power(2, Ceil(Log2(fCodecContext^.width))));
-    fTexHeight  := Round(Power(2, Ceil(Log2(fCodecContext^.height))));
+  fTexWidth   := Round(Power(2, Ceil(Log2(fCodecContext^.width))));
+  fTexHeight  := Round(Power(2, Ceil(Log2(fCodecContext^.height))));
   end
   else
   begin
@@ -1392,8 +1392,8 @@ begin
      Round(Time / av_q2d(fStream^.time_base)),
      SeekFlags) < 0) then
   begin
-    Log.LogError('av_seek_frame() failed', 'TVideoPlayback_ffmpeg.SetPosition');
-    Exit;
+      Log.LogError('av_seek_frame() failed', 'TVideoPlayback_ffmpeg.SetPosition');
+      Exit;
   end;
 
   avcodec_flush_buffers(fCodecContext);

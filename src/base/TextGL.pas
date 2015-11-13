@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: https://ultrastardx.svn.sourceforge.net/svnroot/ultrastardx/trunk/src/base/TextGL.pas $
+ * $Id: TextGL.pas 2675 2010-10-17 17:00:23Z tobigun $
  *}
 
 unit TextGL;
@@ -100,7 +100,7 @@ procedure AddFontFallbacks(FontIni: TMemIniFile; Font: TFont);
 var
   FallbackFont: IPath;
   IdentName: string;
-  I: integer;
+  I: Integer;
 begin
   // evaluate the ini-file's 'Fallbacks' section
   for I := 1 to 10 do
@@ -128,8 +128,8 @@ var
   I: integer;
   FontIni: TMemIniFile;
   FontFile: IPath;
-  FontMaxResolution: integer;
-  FontPreCache: integer;
+  FontMaxResolution: Integer;
+  FontPreCache: Integer;
   Outline: single;
   Embolden: single;
   OutlineFont: TFTScalableOutlineFont;
@@ -161,7 +161,7 @@ begin
           FontMaxResolution,
           Outline,
           True,
-          (FontPreCache <> 0)
+          (FontPreCache<>0)
         );
         OutlineFont.SetOutlineColor(
           FontIni.ReadFloat(SectionName, 'OutlineColorR',  0.0),
@@ -181,7 +181,7 @@ begin
           FontMaxResolution,
           Embolden,
           True,
-          (FontPreCache <> 0)
+          (FontPreCache<>0)
         );
         Fonts[I].Outlined := false;
       end;

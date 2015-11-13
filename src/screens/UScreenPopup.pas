@@ -19,8 +19,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $URL$
- * $Id$
+ * $URL: svn://basisbit@svn.code.sf.net/p/ultrastardx/svn/trunk/src/screens/UScreenPopup.pas $
+ * $Id: UScreenPopup.pas 1939 2009-11-09 00:27:55Z s_alexander $
  *}
 
 unit UScreenPopup;
@@ -36,10 +36,25 @@ interface
 uses
   SDL,
   SysUtils,
+  UDataBase,
+  UDLLManager,
+  ULog,
   UMenu,
   UMusic,
+  {$IFDEF FPC}
+  md5,
+  {$ENDIF}
+  {$IFDEF Delphi}
+  UMD5,
+  {$ENDIF}
+  USkins,
+  USongs,
+  UScreenSong,
+  UNote,
   UFiles,
-  UThemes;
+  UTexture,
+  UThemes,
+  UWebSDK;
 
 type
   TPopupCheckHandler = procedure(Value: boolean; Data: Pointer);
@@ -60,9 +75,8 @@ type
       function Draw: boolean; override;
   end;
 
-{ for later addition
 type
-  TPopupInsertUserHandler = procedure(Value: boolean; Data: pointer);
+  TPopupInsertUserHandler = procedure(Value: boolean; Data: Pointer);
 
   TScreenPopupInsertUser = class(TMenu)
     private
@@ -70,7 +84,7 @@ type
       fHandlerData: Pointer;
 
     public
-      Visible:  boolean; // whether the menu should be drawn
+      Visible: boolean; // whether the menu should be drawn
       Username: UTF8String;
       Password: UTF8String;
       InteractionTmp: integer;
@@ -84,12 +98,12 @@ type
   end;
 
 type
-  TPopupSendScoreHandler = procedure(Value: integer; Data: pointer);
+  TPopupSendScoreHandler = procedure(Value: integer; Data: Pointer);
 
   TScreenPopupSendScore = class(TMenu)
     private
-      fHandler:     TPopupSendScoreHandler;
-      fHandlerData: pointer;
+      fHandler: TPopupSendScoreHandler;
+      fHandlerData: Pointer;
 
       TColorR: real;
       TColorG: real;
@@ -118,7 +132,6 @@ type
           HandlerData: Pointer);
       function Draw: boolean; override;
   end;
-}
 
 type
   TScreenPopup = class(TMenu)
@@ -147,25 +160,24 @@ type
       constructor Create;
   end;
 
-{ for later addition
 type
   TScreenPopupScoreDownload = class(TMenu)
     public
       Visible: boolean; // whether the menu should be drawn
       Actual_Song: integer;
-      Actual_Web:  integer;
-      Index_Song:  integer;
-      Num_Songs:   integer;
-      Num_Webs:    integer;
+      Actual_Web: integer;
+      Index_Song: integer;
+      Num_Songs: integer;
+      Num_Webs: integer;
       CountSongsUpdate: integer;
 
       OpScoreFile: boolean;
-      ScoreFile:   TextFile;
+      ScoreFile: TextFile;
 
       Download_Phase: integer;
 
       Text_SongSituation: UTF8String;
-      Text_WebSituation:  UTF8String;
+      Text_WebSituation: UTF8String;
 
       Texture_ProgressBar: TTexture;
 
@@ -188,7 +200,6 @@ type
       procedure LogSongUpdate(Artist, Title, WebName: UTF8String);
       procedure OpenFile();
   end;
-}
 
 var
   //ISelections: array of string;
@@ -197,14 +208,16 @@ var
 implementation
 
 uses
+  gl,
   UGraphic,
   UMain,
   UIni,
-  UTexture,
   ULanguage,
   UParty,
+  USong,
   UPlaylist,
   UDisplay,
+  UPathUtils,
   UUnicodeUtils;
 
 { TScreenPopupCheck }
@@ -304,7 +317,6 @@ end;
 
 { TScreenPopupInsertUser }
 
-{for later addition
 function TScreenPopupInsertUser.ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean;
 var
   Value: boolean;
@@ -461,9 +473,9 @@ begin
 
   Background.OnShow
 end;
-}
+
 { TScreenPopupSendScore }
-{
+
 function TScreenPopupSendScore.ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean;
 var
   New_User: boolean;
@@ -808,9 +820,9 @@ begin
 
   Background.OnShow
 end;
-}
+
 { TScreenPopupScoreDownload }
-{
+
 function TScreenPopupScoreDownload.ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean;
 var
   Value: boolean;
@@ -983,10 +995,10 @@ begin
         SongExist := true;
         DataBase.AddSong(CatSongs.Song[Index_Song]);
 
-        Level       := StrToInt(Copy(String_Text, 33, 1)) - 1;
-        Max_Score   := Copy(String_Text, 34, 5);
+        Level := StrToInt(Copy(String_Text, 33, 1)) - 1;
+        Max_Score := Copy(String_Text, 34, 5);
         Media_Score := Copy(String_Text, 39, 5);
-        User_Score  := Copy(String_Text, 44, Length(String_Text) - 43);
+        User_Score := Copy(String_Text, 44, Length(String_Text) - 43);
 
         DataBase.AddMax_Score(CatSongs.Song[Index_Song], DllMan.Websites[Actual_Web - 1].ID, StrToInt(Max_Score), Level);
         DataBase.AddMedia_Score(CatSongs.Song[Index_Song], DllMan.Websites[Actual_Web - 1].ID, StrToInt(Media_Score), Level);
@@ -1141,10 +1153,10 @@ begin
             end;
 
             Download_Phase := 1;
-            Actual_Song    := 0;
-            Index_Song     := 0;
-            Actual_Level   := 0;
-            Actual_Web     := Actual_Web + 1;
+            Actual_Song := 0;
+            Index_Song := 0;
+            Actual_Level := 0;
+            Actual_Web := Actual_Web + 1;
           end
           else
           begin
@@ -1172,10 +1184,10 @@ begin
         if ((Actual_Web < Num_Webs) and (Num_Webs > 1)) then
         begin
           //Download_Phase := 1;
-          Actual_Song  := 0;
-          Index_Song   := 0;
+          Actual_Song := 0;
+          Index_Song := 0;
           Actual_Level := 0;
-          Actual_Web   := Actual_Web + 1;
+          Actual_Web := Actual_Web + 1;
           OpenFile;
         end
         else
@@ -1301,26 +1313,26 @@ begin
   Background.OnShow;
 
   //reset vars
-  Actual_Song    := 0;
-  Actual_Web     := 1;
-  Actual_Level   := 0;
-  Index_Song     := 0;
+  Actual_Song := 0;
+  Actual_Web := 1;
+  Actual_Level := 0;
+  Index_Song := 0;
   Download_Phase := 0;
-  List_MD5Song   := '';
-  OpScoreFile    := false;
+  List_MD5Song := '';
+  OpScoreFile := false;
   CountSongsUpdate := 0;
 
   if (optmode = 1) then
     OpScoreFile := true;
 
-  for I := 0 to 2 do
+  for I:= 0 to 2 do
   begin
     Receive_List[I] := '';
     Position_Receive_List[I] := 1;
   end;
 
   Text_SongSituation := Language.Translate('SCORE_DOWNLOAD_CREATE_LIST');
-  Text_WebSituation  := '';
+  Text_WebSituation := '';
 
   if (optsong = 0) then
     Num_Songs := 1
@@ -1333,19 +1345,19 @@ begin
     if (Num_Webs > 1) then
     begin
       Statics[2].Visible := true;
-      Text[1].Visible    := true;
+      Text[1].Visible := true;
     end
     else
     begin
-      Text[1].Visible    := false;
+      Text[1].Visible := false;
       Statics[2].Visible := false;
     end;
   end
   else
   begin
-    Num_Webs   := 1;
+    Num_Webs := 1;
     Actual_Web := optweb;
-    Text[1].Visible    := false;
+    Text[1].Visible := false;
     Statics[2].Visible := false;
   end;
 
@@ -1356,7 +1368,6 @@ begin
   Interaction := -1;
 
 end;
-}
 
 { TScreenPopup }
 
