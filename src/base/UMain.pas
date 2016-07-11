@@ -40,7 +40,6 @@ uses
 var
   CheckMouseButton: boolean; // for checking mouse motion
   MAX_FPS: Byte; // 0 to 255 is enough
-  LastMouseX, LastMouseY: integer;
 
 
 procedure Main;
@@ -384,6 +383,7 @@ var
   s1: UTF8String;
   mouseDown: boolean;
   mouseBtn:  integer;
+  mouseX, mouseY: PInt;
   KeepGoing: boolean;
   SuppressKey: boolean;
   UpdateMouse: boolean;
@@ -430,8 +430,6 @@ begin
               else
                 mouseDown := false;
               mouseBtn  := 0;
-              LastMouseX := Event.button.X;
-              LastMouseY := Event.button.Y;
             end;
             SDL_MOUSEWHEEL:
             begin
@@ -596,11 +594,14 @@ begin
 
   if Display.NeedsCursorUpdate() then
   begin
+
+
     // push a generated event onto the queue in order to simulate a mouse movement
     // the next tick will poll the motion event and handle it just like a real input
+    SDL_GetMouseState(@mouseX, @mouseY);
     SimEvent.user.type_ := SDL_MOUSEMOTION;
-    SimEvent.button.x := LastMouseX;
-    SimEvent.button.y := LastMouseY;
+    SimEvent.button.x := longint(mouseX);
+    SimEvent.button.y := longint(mouseY);
     SDL_PushEvent(@SimEvent);
   end;
 end;
